@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -55,15 +54,15 @@ class _VerificationScreenState extends State<VerificationScreen>
     });
 
     // Small delay for UX
-    await Future.delayed(const Duration(milliseconds: 500));
-    setState(() => _currentStep = 'Analyzing image clarity...');
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (mounted) setState(() => _currentStep = 'Analyzing image clarity...');
 
     await Future.delayed(const Duration(milliseconds: 300));
-    setState(() => _currentStep = 'Checking lighting...');
+    if (mounted) setState(() => _currentStep = 'Checking lighting...');
 
-    final result = await _api.verifyImage(File(widget.imagePath));
+    final result = await _api.verifyImage(widget.imagePath);
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     if (mounted) {
       setState(() {

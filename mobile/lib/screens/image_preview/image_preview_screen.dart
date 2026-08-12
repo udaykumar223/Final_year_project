@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/crop.dart';
+import '../../widgets/app_image.dart';
 
 /// SmartCrop AI — Image Preview Screen
 /// Shows the captured/selected image before verification
@@ -51,8 +51,8 @@ class ImagePreviewScreen extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                    child: Image.file(
-                      File(imagePath),
+                    child: AppImage(
+                      imagePath: imagePath,
                       fit: BoxFit.cover,
                     ),
                   ),

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -52,33 +51,33 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
   Future<void> _runAnalysis() async {
     try {
       // Step 1: Image received
-      await _updateStep(0, StepStatus.completed, delayMs: 300);
+      await _updateStep(0, StepStatus.completed, delayMs: 250);
 
       // Step 2: Image verified
-      await _updateStep(1, StepStatus.active, delayMs: 200);
-      await _updateStep(1, StepStatus.completed, delayMs: 400);
+      await _updateStep(1, StepStatus.active, delayMs: 150);
+      await _updateStep(1, StepStatus.completed, delayMs: 300);
 
       // Step 3: Image processed
-      await _updateStep(2, StepStatus.active, delayMs: 200);
-      await _updateStep(2, StepStatus.completed, delayMs: 500);
+      await _updateStep(2, StepStatus.active, delayMs: 150);
+      await _updateStep(2, StepStatus.completed, delayMs: 350);
 
       // Step 4: Detecting disease (actual API call)
-      await _updateStep(3, StepStatus.active, delayMs: 200);
+      await _updateStep(3, StepStatus.active, delayMs: 150);
 
       final result = await _api.predict(
-        File(widget.imagePath),
+        widget.imagePath,
         cropName: widget.crop.name,
       );
 
       if (!mounted) return;
 
       if (result.success) {
-        await _updateStep(3, StepStatus.completed, delayMs: 300);
-        await _updateStep(4, StepStatus.active, delayMs: 200);
-        await _updateStep(4, StepStatus.completed, delayMs: 400);
+        await _updateStep(3, StepStatus.completed, delayMs: 200);
+        await _updateStep(4, StepStatus.active, delayMs: 150);
+        await _updateStep(4, StepStatus.completed, delayMs: 300);
 
         // Navigate to result
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 200));
         if (mounted) {
           Navigator.of(context).pushReplacementNamed(
             '/result',

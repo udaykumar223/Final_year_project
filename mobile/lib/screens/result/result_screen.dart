@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/crop.dart';
 import '../../models/prediction.dart';
+import '../../widgets/app_image.dart';
 
 /// SmartCrop AI — Result Screen
 /// The most important screen. Shows real AI prediction with confidence.
@@ -56,8 +56,8 @@ class ResultScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 200,
-                child: Image.file(
-                  File(imagePath),
+                child: AppImage(
+                  imagePath: imagePath,
                   fit: BoxFit.cover,
                 ),
               ),

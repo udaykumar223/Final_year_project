@@ -1,24 +1,29 @@
 import 'dart:convert';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/prediction.dart';
 import '../models/verification_result.dart';
 
 /// SmartCrop AI — API Service
-/// Handles all communication with the FastAPI backend.
+/// Handles all communication with the FastAPI backend across Web and Mobile.
 class ApiService {
-  // Change this to your backend URL
-  static const String _baseUrl = 'http://10.0.2.2:8000'; // Android emulator
-  static const String _webBaseUrl = 'http://localhost:8000'; // Web
+  // Backend URLs
+  static const String _androidEmulatorUrl = 'http://10.0.2.2:8000';
+  static const String _localUrl = 'http://localhost:8000';
   static const Duration _timeout = Duration(seconds: 30);
 
   String get baseUrl {
-    // Use localhost for web, 10.0.2.2 for Android emulator
+    if (kIsWeb) {
+      return _localUrl;
+    }
     try {
-      if (Platform.isAndroid) return _baseUrl;
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        return _androidEmulatorUrl;
+      }
     } catch (_) {}
-    return _webBaseUrl;
+    return _localUrl;
   }
 
   /// Health check
@@ -37,17 +42,19 @@ class ApiService {
     }
   }
 
-  /// Verify image quality
-  Future<VerificationResult> verifyImage(File imageFile) async {
+  /// Verify image quality (supports Web and Mobile paths)
+  Future<VerificationResult> verifyImage(String imagePath) async {
     try {
       final request = http.MultipartRequest(
         'POST',
         Uri.parse('$baseUrl/verify-image'),
       );
 
-      request.files.add(await http.MultipartFile.fromPath(
+      final bytes = await XFile(imagePath).readAsBytes();
+      request.files.add(http.MultipartFile.fromBytes(
         'image',
-        imageFile.path,
+        bytes,
+        filename: 'leaf_verify.jpg',
         contentType: MediaType('image', 'jpeg'),
       ));
 
@@ -75,24 +82,26 @@ class ApiService {
         blurOk: true,
         brightnessOk: true,
         formatOk: true,
-        message: 'Unable to connect. Please check your internet connection.',
+        message: 'Unable to connect. Please make sure the backend server is running.',
         issues: ['connection_error'],
         details: {},
       );
     }
   }
 
-  /// Predict crop disease
-  Future<PredictionResult> predict(File imageFile, {String? cropName}) async {
+  /// Predict crop disease (supports Web and Mobile paths)
+  Future<PredictionResult> predict(String imagePath, {String? cropName}) async {
     try {
       final request = http.MultipartRequest(
         'POST',
         Uri.parse('$baseUrl/predict'),
       );
 
-      request.files.add(await http.MultipartFile.fromPath(
+      final bytes = await XFile(imagePath).readAsBytes();
+      request.files.add(http.MultipartFile.fromBytes(
         'image',
-        imageFile.path,
+        bytes,
+        filename: 'leaf_predict.jpg',
         contentType: MediaType('image', 'jpeg'),
       ));
 
@@ -136,7 +145,7 @@ class ApiService {
         confidence: 0,
         confidencePercent: 0,
         confidenceLabel: 'None',
-        message: 'Unable to connect. Please check your internet connection.',
+        message: 'Unable to connect. Please make sure the backend server is running.',
         topPredictions: [],
       );
     }
