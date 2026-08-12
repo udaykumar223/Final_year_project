@@ -1,0 +1,62 @@
+# SmartCrop AI — .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Dataset (large files)
+data/train/
+data/validation/
+data/test/
+
+# Model checkpoints (large files)
+ai_model/checkpoints/*.pth
+ai_model/checkpoints/*.pt
+
+# Docs generated images (tracked for milestone evidence)
+# docs/*.png
+
+# Flutter
+mobile/.dart_tool/
+mobile/.packages
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/ios/Pods/
+mobile/ios/.symlinks/
+mobile/.metadata
+
+# Node
+node_modules/
+
+# Logs
+*.log

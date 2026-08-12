@@ -1,0 +1,1 @@
+# SmartCrop AI — Services Package
