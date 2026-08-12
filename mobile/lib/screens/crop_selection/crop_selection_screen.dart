@@ -25,30 +25,29 @@ class CropSelectionScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Instructions
+            // Guidance Banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(AppSpacing.base),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight.withValues(alpha: 0.08),
+                color: AppColors.surfaceCard,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                border: Border.all(
-                  color: AppColors.primaryLight.withValues(alpha: 0.15),
-                ),
+                border: Border.all(color: AppColors.border),
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    color: AppColors.primaryLight,
-                    size: 20,
+                  const Icon(
+                    Icons.eco_rounded,
+                    color: AppColors.accent,
+                    size: 22,
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Text(
-                      'Select the crop you want to scan. This helps the AI give you more accurate results.',
+                      'Select the target crop you want to inspect. The AI Vision Transformer is optimized for these categories.',
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.primaryLight,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
                       ),
                     ),
                   ),
@@ -58,37 +57,27 @@ class CropSelectionScreen extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.xl),
 
-            Text('Available Crops', style: AppTextStyles.headlineSmall),
+            Text(
+              'Active Supported Crops',
+              style: AppTextStyles.headlineSmall.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             const SizedBox(height: AppSpacing.md),
 
             ...Crop.availableCrops.map((crop) => Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: CropCard(
-                crop: crop,
-                onTap: () {
-                  Navigator.of(context).pushNamed(
-                    '/scan',
-                    arguments: crop,
-                  );
-                },
-              ),
-            )),
-
-            const SizedBox(height: AppSpacing.xl),
-
-            // Coming soon
-            Text(
-              'Coming Soon',
-              style: AppTextStyles.labelMedium.copyWith(
-                color: AppColors.textTertiary,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.sm),
-
-            ...Crop.futureCrops.map((crop) => Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-              child: CropCard(crop: crop),
-            )),
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: CropCard(
+                    crop: crop,
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        '/scan',
+                        arguments: crop,
+                      );
+                    },
+                  ),
+                )),
 
             const SizedBox(height: AppSpacing.xxl),
           ],

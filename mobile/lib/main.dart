@@ -28,7 +28,7 @@ class SmartCropApp extends StatelessWidget {
     return MaterialApp(
       title: 'SmartCrop AI',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.darkTheme,
       initialRoute: '/',
       onGenerateRoute: _onGenerateRoute,
     );

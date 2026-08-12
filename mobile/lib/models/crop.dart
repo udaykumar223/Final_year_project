@@ -1,5 +1,4 @@
 /// SmartCrop AI — Crop Model
-/// Central source of crop data. Add new crops here only.
 class Crop {
   final String id;
   final String name;
@@ -18,6 +17,8 @@ class Crop {
     required this.diseases,
     this.isEnabled = true,
   });
+
+  int get diseaseCount => diseases.length;
 
   /// Phase 1 crops — generated from the actual dataset
   static const List<Crop> availableCrops = [
@@ -56,25 +57,5 @@ class Crop {
     ),
   ];
 
-  /// Future crops (Phase 2)
-  static const List<Crop> futureCrops = [
-    Crop(
-      id: 'cauliflower',
-      name: 'Cauliflower',
-      displayName: 'Cauliflower',
-      emoji: '\u{1F966}',
-      description: 'Coming soon',
-      diseases: [],
-      isEnabled: false,
-    ),
-    Crop(
-      id: 'chilli',
-      name: 'Chilli',
-      displayName: 'Chilli',
-      emoji: '\u{1F336}',
-      description: 'Coming soon',
-      diseases: [],
-      isEnabled: false,
-    ),
-  ];
+  static const List<Crop> defaults = availableCrops;
 }

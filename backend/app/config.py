@@ -8,7 +8,10 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env file
+# Load .env file from backend or root
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+load_dotenv(dotenv_path=PROJECT_ROOT / "backend" / ".env")
+load_dotenv(dotenv_path=PROJECT_ROOT / ".env")
 load_dotenv()
 
 # ─── Server ──────────────────────────────────────────────
@@ -16,12 +19,11 @@ HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 
-# ─── MongoDB ─────────────────────────────────────────────
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+# ─── MongoDB (Local & Online MongoDB Atlas) ───────────────
+MONGODB_URL = os.getenv("MONGODB_URI") or os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "smartcrop_ai")
 
 # ─── Model ───────────────────────────────────────────────
-PROJECT_ROOT = Path(__file__).parent.parent.parent
 MODEL_CHECKPOINT = PROJECT_ROOT / "ai_model" / "checkpoints" / "best_model.pth"
 CLASS_NAMES_FILE = PROJECT_ROOT / "ai_model" / "class_names.json"
 
@@ -36,7 +38,7 @@ MIN_IMAGE_AREA = 224 * 224    # Minimum pixel area
 # ─── CORS ────────────────────────────────────────────────
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "*").split(",")
 
-# ─── JWT (future) ────────────────────────────────────────
-JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
+# ─── JWT & Auth ──────────────────────────────────────────
+JWT_SECRET = os.getenv("JWT_SECRET", "smartcrop-super-secret-key-2026")
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRY_HOURS = 24
+JWT_EXPIRY_HOURS = 72

@@ -2,7 +2,7 @@
 SmartCrop AI — FastAPI Application
 =====================================
 Main application entry point.
-Configures CORS, routes, and MongoDB connection.
+Configures CORS, routes, Auth, and MongoDB connection.
 """
 
 import sys
@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     print("  SMARTCROP AI — Starting Server")
     print("=" * 50)
 
-    # Connect to MongoDB
+    # Connect to MongoDB (supports online MongoDB Atlas connection string)
     try:
         _client = AsyncIOMotorClient(MONGODB_URL, serverSelectionTimeoutMS=5000)
         # Test connection
@@ -47,7 +47,7 @@ async def lifespan(app: FastAPI):
         print(f"  [OK] MongoDB connected: {MONGODB_DB_NAME}")
     except Exception as e:
         print(f"  [!] MongoDB not available: {e}")
-        print("  -> Predictions will NOT be saved to database")
+        print("  -> Running with in-memory user & prediction storage")
         _db = None
 
     # Pre-load the AI model
@@ -78,7 +78,7 @@ app = FastAPI(
     title="SmartCrop AI",
     description=(
         "AI-powered crop disease detection API. "
-        "Upload a photo of a crop leaf to identify possible diseases."
+        "Upload a photo of a crop leaf to identify diseases and severity."
     ),
     version="0.3.0",
     lifespan=lifespan,
@@ -97,8 +97,10 @@ app.add_middleware(
 from app.routes.health import router as health_router
 from app.routes.verification import router as verification_router
 from app.routes.prediction import router as prediction_router
+from app.routes.auth import router as auth_router
 
 app.include_router(health_router, tags=["Health"])
+app.include_router(auth_router, tags=["Authentication"])
 app.include_router(verification_router, tags=["Verification"])
 app.include_router(prediction_router, tags=["Prediction"])
 

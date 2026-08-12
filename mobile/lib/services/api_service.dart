@@ -7,12 +7,24 @@ import '../models/prediction.dart';
 import '../models/verification_result.dart';
 
 /// SmartCrop AI — API Service
-/// Handles all communication with the FastAPI backend across Web and Mobile.
+/// Handles real authentication (Register/Login) and AI Disease Diagnosis.
 class ApiService {
+  static final ApiService _instance = ApiService._internal();
+  factory ApiService() => _instance;
+  ApiService._internal();
+
   // Backend URLs
   static const String _androidEmulatorUrl = 'http://10.0.2.2:8000';
   static const String _localUrl = 'http://localhost:8000';
   static const Duration _timeout = Duration(seconds: 30);
+
+  // In-memory auth session state
+  String? _authToken;
+  Map<String, dynamic>? _currentUser;
+
+  String? get authToken => _authToken;
+  Map<String, dynamic>? get currentUser => _currentUser;
+  bool get isAuthenticated => _authToken != null;
 
   String get baseUrl {
     if (kIsWeb) {
@@ -42,7 +54,85 @@ class ApiService {
     }
   }
 
-  /// Verify image quality (supports Web and Mobile paths)
+  /// Real User Registration
+  Future<Map<String, dynamic>> register({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'name': name.trim(),
+          'email': email.trim().toLowerCase(),
+          'password': password,
+        }),
+      ).timeout(_timeout);
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        _authToken = data['token'];
+        _currentUser = data['user'];
+        return {'success': true, 'message': data['message'], 'user': data['user']};
+      } else {
+        return {
+          'success': false,
+          'message': data['detail'] ?? 'Registration failed. Please try again.',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Unable to connect to server. Please ensure the backend is running.',
+      };
+    }
+  }
+
+  /// Real User Login (Strict Password Verification)
+  Future<Map<String, dynamic>> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/auth/login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email.trim().toLowerCase(),
+          'password': password,
+        }),
+      ).timeout(_timeout);
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && data['success'] == true) {
+        _authToken = data['token'];
+        _currentUser = data['user'];
+        return {'success': true, 'message': data['message'], 'user': data['user']};
+      } else {
+        return {
+          'success': false,
+          'message': data['detail'] ?? 'Invalid credentials. Please check and try again.',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Unable to connect to server. Please ensure the backend is running.',
+      };
+    }
+  }
+
+  /// Logout
+  void logout() {
+    _authToken = null;
+    _currentUser = null;
+  }
+
+  /// Verify image quality
   Future<VerificationResult> verifyImage(String imagePath) async {
     try {
       final request = http.MultipartRequest(
@@ -89,7 +179,7 @@ class ApiService {
     }
   }
 
-  /// Predict crop disease (supports Web and Mobile paths)
+  /// Predict crop disease and calculate severity
   Future<PredictionResult> predict(String imagePath, {String? cropName}) async {
     try {
       final request = http.MultipartRequest(
@@ -117,22 +207,28 @@ class ApiService {
       } else if (response.statusCode == 503) {
         return PredictionResult(
           success: false,
+          plantName: cropName ?? 'Unknown Plant',
           crop: cropName ?? 'Unknown',
-          predictedDisease: '',
+          diseaseName: 'Analysis Unavailable',
+          predictedDisease: 'Analysis Unavailable',
           confidence: 0,
           confidencePercent: 0,
           confidenceLabel: 'None',
+          severity: SeverityInfo.defaultFor('Unknown'),
           message: 'Crop analysis is temporarily unavailable. Please try again later.',
           topPredictions: [],
         );
       } else {
         return PredictionResult(
           success: false,
+          plantName: cropName ?? 'Unknown Plant',
           crop: cropName ?? 'Unknown',
-          predictedDisease: '',
+          diseaseName: 'Diagnosis Failed',
+          predictedDisease: 'Diagnosis Failed',
           confidence: 0,
           confidencePercent: 0,
           confidenceLabel: 'None',
+          severity: SeverityInfo.defaultFor('Unknown'),
           message: 'We could not analyze your crop. Please try again.',
           topPredictions: [],
         );
@@ -140,11 +236,14 @@ class ApiService {
     } catch (e) {
       return PredictionResult(
         success: false,
+        plantName: cropName ?? 'Unknown Plant',
         crop: cropName ?? 'Unknown',
-        predictedDisease: '',
+        diseaseName: 'Connection Error',
+        predictedDisease: 'Connection Error',
         confidence: 0,
         confidencePercent: 0,
         confidenceLabel: 'None',
+        severity: SeverityInfo.defaultFor('Unknown'),
         message: 'Unable to connect. Please make sure the backend server is running.',
         topPredictions: [],
       );

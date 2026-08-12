@@ -5,8 +5,7 @@ import '../../theme/app_text_styles.dart';
 import '../../theme/app_spacing.dart';
 import '../../models/crop.dart';
 
-/// SmartCrop AI — Scan Screen
-/// Camera/Gallery capture with responsive layout & visual guidance
+/// SmartCrop AI — Futuristic Scanner Screen with Animated Laser Line
 class ScanScreen extends StatefulWidget {
   final Crop crop;
   const ScanScreen({super.key, required this.crop});
@@ -15,45 +14,29 @@ class ScanScreen extends StatefulWidget {
   State<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _ScanScreenState extends State<ScanScreen> {
+class _ScanScreenState extends State<ScanScreen> with SingleTickerProviderStateMixin {
   final ImagePicker _picker = ImagePicker();
+  late AnimationController _laserController;
 
-  Future<void> _takePhoto() async {
-    try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 90,
-      );
-      if (photo != null && mounted) {
-        Navigator.of(context).pushNamed(
-          '/image-preview',
-          arguments: {
-            'imagePath': photo.path,
-            'crop': widget.crop,
-          },
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Could not open camera. Please check permissions.',
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
-            ),
-            backgroundColor: AppColors.danger,
-          ),
-        );
-      }
-    }
+  @override
+  void initState() {
+    super.initState();
+    _laserController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
   }
 
-  Future<void> _pickFromGallery() async {
+  @override
+  void dispose() {
+    _laserController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
     try {
       final XFile? photo = await _picker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 90,
@@ -71,10 +54,7 @@ class _ScanScreenState extends State<ScanScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Could not open gallery. Please check permissions.',
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
-            ),
+            content: Text('Could not access ${source == ImageSource.camera ? "camera" : "gallery"}.'),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -87,8 +67,7 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text('Scan ${widget.crop.displayName}',
-            style: AppTextStyles.titleLarge),
+        title: Text('Scan ${widget.crop.displayName}', style: AppTextStyles.titleLarge),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
@@ -101,80 +80,24 @@ class _ScanScreenState extends State<ScanScreen> {
             children: [
               const SizedBox(height: AppSpacing.sm),
 
-              // Crop info
-              Text(
-                widget.crop.emoji,
-                style: const TextStyle(fontSize: 44),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                'Scan ${widget.crop.displayName}',
-                style: AppTextStyles.headlineMedium,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                'Take a clear photo of the affected leaf\nor select one from your gallery.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                  height: 1.5,
-                ),
-              ),
-
-              const SizedBox(height: AppSpacing.lg),
-
-              // Visual guide frame
+              // Crop indicator
               Container(
-                width: 200,
-                height: 200,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                  border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    width: 2,
-                    strokeAlign: BorderSide.strokeAlignOutside,
-                  ),
-                  color: AppColors.primary.withValues(alpha: 0.04),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.eco_rounded,
-                      size: 44,
-                      color: AppColors.primary.withValues(alpha: 0.4),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Place leaf here',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.primary.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: AppSpacing.lg),
-
-              // Tips
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: AppColors.infoLight.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  color: AppColors.surfaceVariant,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                  border: Border.all(color: AppColors.primaryLight.withValues(alpha: 0.4)),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.lightbulb_outline_rounded,
-                        color: AppColors.info, size: 18),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        'Hold steady, use good lighting, and focus on the affected leaf area.',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.info,
-                        ),
+                    Text(widget.crop.emoji, style: const TextStyle(fontSize: 20)),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Target Crop: ${widget.crop.displayName}',
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -183,33 +106,170 @@ class _ScanScreenState extends State<ScanScreen> {
 
               const SizedBox(height: AppSpacing.xl),
 
-              // Action buttons
+              // Futuristic Scanner Viewfinder with Animated Laser
+              Center(
+                child: Container(
+                  width: 260,
+                  height: 260,
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceCard,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                    border: Border.all(
+                      color: AppColors.accent.withValues(alpha: 0.5),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                        blurRadius: 25,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                    child: Stack(
+                      children: [
+                        // Viewfinder Corner Brackets
+                        Positioned.fill(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildCorner(0),
+                                    _buildCorner(1),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Icon(
+                                      Icons.eco_rounded,
+                                      size: 52,
+                                      color: AppColors.accent.withValues(alpha: 0.35),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Position Leaf in Frame',
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: AppColors.accent.withValues(alpha: 0.8),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    _buildCorner(2),
+                                    _buildCorner(3),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Animated Laser Sweep Line
+                        AnimatedBuilder(
+                          animation: _laserController,
+                          builder: (context, child) {
+                            return Positioned(
+                              top: _laserController.value * 230,
+                              left: 10,
+                              right: 10,
+                              child: Container(
+                                height: 3,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Colors.transparent,
+                                      AppColors.accent,
+                                      Colors.white,
+                                      AppColors.accent,
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.accent.withValues(alpha: 0.8),
+                                      blurRadius: 10,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: AppSpacing.xl),
+
+              // Photography Guide Card
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.base),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceCard,
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.infoLight,
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                      ),
+                      child: const Icon(Icons.lightbulb_rounded, color: AppColors.info, size: 20),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        'Ensure the leaf is well-lit, hold your phone steady, and focus on discolored spots.',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: AppSpacing.xxl),
+
+              // Action Buttons
               Row(
                 children: [
-                  // Gallery button
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: _pickFromGallery,
-                      icon: const Icon(Icons.photo_library_outlined),
-                      label: Text('Gallery',
-                          style: AppTextStyles.buttonMedium
-                              .copyWith(color: AppColors.primary)),
+                      onPressed: () => _pickImage(ImageSource.gallery),
+                      icon: const Icon(Icons.photo_library_rounded),
+                      label: const Text('Gallery'),
                       style: OutlinedButton.styleFrom(
-                        minimumSize:
-                            const Size(double.infinity, AppSpacing.buttonHeight),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  // Camera button
                   Expanded(
                     flex: 2,
                     child: ElevatedButton.icon(
-                      onPressed: _takePhoto,
+                      onPressed: () => _pickImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt_rounded),
-                      label: Text('Take Photo',
-                          style: AppTextStyles.buttonLarge
-                              .copyWith(color: Colors.white)),
+                      label: const Text('Take Photo'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
                     ),
                   ),
                 ],
@@ -218,6 +278,25 @@ class _ScanScreenState extends State<ScanScreen> {
               const SizedBox(height: AppSpacing.lg),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCorner(int cornerIndex) {
+    return Container(
+      width: 18,
+      height: 18,
+      decoration: BoxDecoration(
+        border: Border(
+          top: cornerIndex < 2 ? const BorderSide(color: AppColors.accent, width: 3) : BorderSide.none,
+          bottom: cornerIndex >= 2 ? const BorderSide(color: AppColors.accent, width: 3) : BorderSide.none,
+          left: (cornerIndex == 0 || cornerIndex == 2)
+              ? const BorderSide(color: AppColors.accent, width: 3)
+              : BorderSide.none,
+          right: (cornerIndex == 1 || cornerIndex == 3)
+              ? const BorderSide(color: AppColors.accent, width: 3)
+              : BorderSide.none,
         ),
       ),
     );
