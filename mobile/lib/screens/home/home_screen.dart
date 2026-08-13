@@ -21,6 +21,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Crop _selectedCrop = Crop.defaults[0]; // Default Banana
   late AnimationController _pulseController;
 
+  // Recent Crops records
+  final List<Map<String, dynamic>> _recentCrops = [
+    {
+      'crop': Crop.defaults[0], // Banana
+      'time': '10 mins ago',
+      'scansCount': 4,
+    },
+    {
+      'crop': Crop.defaults[1], // Groundnut
+      'time': '2 hours ago',
+      'scansCount': 2,
+    },
+    {
+      'crop': Crop.defaults[2], // Radish
+      'time': 'Yesterday',
+      'scansCount': 1,
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -65,10 +84,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
-  void _openCameraScanner() {
+  void _openCameraScanner([Crop? targetCrop]) {
+    final cropToScan = targetCrop ?? _selectedCrop;
+    setState(() => _selectedCrop = cropToScan);
     Navigator.of(context).pushNamed(
       '/scan',
-      arguments: _selectedCrop,
+      arguments: cropToScan,
     );
   }
 
@@ -225,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             children: [
                               Expanded(
                                 child: ElevatedButton.icon(
-                                  onPressed: _openCameraScanner,
+                                  onPressed: () => _openCameraScanner(_selectedCrop),
                                   icon: const Icon(Icons.camera_alt_rounded, size: 20),
                                   label: const Text('Take Photo'),
                                   style: ElevatedButton.styleFrom(
@@ -319,6 +340,94 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             ],
                           ),
                         ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                // Recent Crops Section
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Recent Crops',
+                      style: AppTextStyles.titleMedium.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      'Quick Access',
+                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+
+                // Recent Crops Cards List
+                Column(
+                  children: _recentCrops.map((item) {
+                    final Crop crop = item['crop'] as Crop;
+                    final String time = item['time'] as String;
+                    final int count = item['scansCount'] as int;
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceCard,
+                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceVariant,
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                            ),
+                            child: Text(crop.emoji, style: const TextStyle(fontSize: 24)),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${crop.displayName} Crop',
+                                  style: AppTextStyles.titleSmall.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                                Text(
+                                  'Last scanned $time • $count inspections',
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => _openCameraScanner(crop),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.surfaceVariant,
+                              foregroundColor: AppColors.accent,
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                                side: BorderSide(color: AppColors.accent.withValues(alpha: 0.3)),
+                              ),
+                            ),
+                            child: const Text('Scan', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+                          ),
+                        ],
                       ),
                     );
                   }).toList(),
