@@ -423,18 +423,31 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               ],
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () => _openCameraScanner(crop),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.surfaceVariant,
-                              foregroundColor: AppColors.accent,
+                          InkWell(
+                            onTap: () => _openCameraScanner(crop),
+                            borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                            child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              shape: RoundedRectangleBorder(
+                              decoration: BoxDecoration(
+                                color: AppColors.surfaceVariant,
                                 borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                                side: BorderSide(color: AppColors.accent.withValues(alpha: 0.3)),
+                                border: Border.all(color: AppColors.accent.withValues(alpha: 0.4)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.camera_alt_rounded, size: 14, color: AppColors.accent),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Scan',
+                                    style: AppTextStyles.labelSmall.copyWith(
+                                      color: AppColors.accent,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: const Text('Scan', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
                           ),
                         ],
                       ),
