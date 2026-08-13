@@ -15,10 +15,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.config import MONGODB_URL, MONGODB_DB_NAME, CORS_ORIGINS
 
-# Add ai_model to path
-AI_MODEL_DIR = Path(__file__).parent.parent.parent / "ai_model"
-sys.path.insert(0, str(AI_MODEL_DIR))
-
 # ─── MongoDB ─────────────────────────────────────────────
 _db = None
 _client = None
