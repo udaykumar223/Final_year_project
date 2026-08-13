@@ -6,7 +6,7 @@ import '../../theme/app_spacing.dart';
 import '../../models/crop.dart';
 import '../../services/api_service.dart';
 
-/// SmartCrop AI — Ultra-Premium Crop Health & Field Advisory Dashboard
+/// SmartCrop AI — Clean & Ultra-Premium Crop Health Dashboard
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,28 +20,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Crop _selectedCrop = Crop.defaults[0]; // Default Banana
   late AnimationController _pulseController;
-
-  // Recent diagnostic records
-  final List<Map<String, dynamic>> _recentScans = [
-    {
-      'crop': 'Banana',
-      'emoji': '🍌',
-      'disease': 'Cordana Leaf Spot',
-      'time': '10 mins ago',
-    },
-    {
-      'crop': 'Radish',
-      'emoji': '🌱',
-      'disease': 'Healthy Leaf',
-      'time': '2 hours ago',
-    },
-    {
-      'crop': 'Groundnut',
-      'emoji': '🥜',
-      'disease': 'Early Leaf Spot',
-      'time': 'Yesterday',
-    },
-  ];
 
   @override
   void initState() {
@@ -141,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Crop Health & Field Advisory',
+                          'Crop Health & Disease Diagnostic',
                           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
@@ -180,66 +158,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   ],
                 ),
 
-                const SizedBox(height: AppSpacing.lg),
-
-                // Live Agricultural Field & Spraying Advisory Widget
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.base),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceGlass,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.infoLight,
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                        ),
-                        child: const Icon(Icons.wb_sunny_rounded, color: AppColors.info, size: 24),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Field Conditions: 28°C • Low Wind',
-                                  style: AppTextStyles.labelMedium.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.successLight,
-                                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                                  ),
-                                  child: Text(
-                                    'GOOD TO SPRAY',
-                                    style: AppTextStyles.labelSmall.copyWith(color: AppColors.success, fontSize: 9),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Optimal morning conditions for bio-fungicide or neem oil application.',
-                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
                 const SizedBox(height: AppSpacing.xl),
 
-                // Hero Futuristic Scanner Card (Cleaned without top right icon)
+                // Hero Futuristic Scanner Card
                 AnimatedBuilder(
                   animation: _pulseController,
                   builder: (context, child) {
@@ -353,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: AppSpacing.sm),
 
-                // Crop Cards (Only Banana, Groundnut, Radish displayed cleanly)
+                // Crop Cards (Only Banana, Groundnut, Radish cleanly displayed)
                 Row(
                   children: Crop.defaults.map((crop) {
                     final isSelected = _selectedCrop.id == crop.id;
@@ -398,74 +319,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             ],
                           ),
                         ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-
-                // Recent Field Diagnoses
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Recent Field Diagnoses',
-                      style: AppTextStyles.titleMedium.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      'Synced to Cloud',
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // Recent Diagnostics Feed (Clean without severity pills)
-                Column(
-                  children: _recentScans.map((scan) {
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceCard,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceVariant,
-                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                            ),
-                            child: Text(scan['emoji'], style: const TextStyle(fontSize: 22)),
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  scan['disease'],
-                                  style: AppTextStyles.titleSmall.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  '${scan['crop']} Plant • ${scan['time']}',
-                                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary, fontSize: 11),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
                       ),
                     );
                   }).toList(),

@@ -104,13 +104,13 @@ class _ScanScreenState extends State<ScanScreen> with SingleTickerProviderStateM
                 ),
               ),
 
-              const SizedBox(height: AppSpacing.xl),
+              const SizedBox(height: AppSpacing.xxl),
 
               // Futuristic Scanner Viewfinder with Animated Laser
               Center(
                 child: Container(
-                  width: 260,
-                  height: 260,
+                  width: 280,
+                  height: 280,
                   decoration: BoxDecoration(
                     color: AppColors.surfaceCard,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
@@ -148,7 +148,7 @@ class _ScanScreenState extends State<ScanScreen> with SingleTickerProviderStateM
                                   children: [
                                     Icon(
                                       Icons.eco_rounded,
-                                      size: 52,
+                                      size: 56,
                                       color: AppColors.accent.withValues(alpha: 0.35),
                                     ),
                                     const SizedBox(height: 8),
@@ -178,7 +178,7 @@ class _ScanScreenState extends State<ScanScreen> with SingleTickerProviderStateM
                           animation: _laserController,
                           builder: (context, child) {
                             return Positioned(
-                              top: _laserController.value * 230,
+                              top: _laserController.value * 250,
                               left: 10,
                               right: 10,
                               child: Container(
@@ -208,40 +208,6 @@ class _ScanScreenState extends State<ScanScreen> with SingleTickerProviderStateM
                       ],
                     ),
                   ),
-                ),
-              ),
-
-              const SizedBox(height: AppSpacing.xl),
-
-              // Photography Guide Card
-              Container(
-                padding: const EdgeInsets.all(AppSpacing.base),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceCard,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppColors.infoLight,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                      ),
-                      child: const Icon(Icons.lightbulb_rounded, color: AppColors.info, size: 20),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Text(
-                        'Ensure the leaf is well-lit, hold your phone steady, and focus on discolored spots.',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          height: 1.4,
-                        ),
-                      ),
-                    ),
-                  ],
                 ),
               ),
 

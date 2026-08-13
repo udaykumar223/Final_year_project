@@ -314,49 +314,7 @@ class ResultScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: AppSpacing.lg),
-
-                // Other Candidate Possibilities
-                if (prediction.topPredictions.length > 1) ...[
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceCard,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Alternative Diagnostic Candidates',
-                          style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(height: AppSpacing.md),
-                        ...prediction.topPredictions.skip(1).map((item) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    item.disease,
-                                    style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
-                                  ),
-                                  Text(
-                                    '${(item.confidence * 100).toStringAsFixed(1)}%',
-                                    style: AppTextStyles.labelMedium.copyWith(
-                                      color: AppColors.accent,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                ],
+                const SizedBox(height: AppSpacing.xxl),
 
                 // Action Buttons
                 ElevatedButton.icon(
