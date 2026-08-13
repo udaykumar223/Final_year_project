@@ -18,31 +18,40 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   final ApiService _api = ApiService();
   final ImagePicker _picker = ImagePicker();
 
-  Crop _selectedCrop = Crop.defaults[0]; // Default Banana
+  late Crop _selectedCrop;
+  late List<Map<String, dynamic>> _recentCrops;
   late AnimationController _pulseController;
-
-  // Recent Crops records
-  final List<Map<String, dynamic>> _recentCrops = [
-    {
-      'crop': Crop.defaults[0], // Banana
-      'time': '10 mins ago',
-      'scansCount': 4,
-    },
-    {
-      'crop': Crop.defaults[1], // Groundnut
-      'time': '2 hours ago',
-      'scansCount': 2,
-    },
-    {
-      'crop': Crop.defaults[2], // Radish
-      'time': 'Yesterday',
-      'scansCount': 1,
-    },
-  ];
 
   @override
   void initState() {
     super.initState();
+    _selectedCrop = Crop.defaults.isNotEmpty ? Crop.defaults[0] : const Crop(
+      id: 'banana',
+      name: 'Banana',
+      displayName: 'Banana',
+      emoji: '🍌',
+      description: '',
+      diseases: [],
+    );
+
+    _recentCrops = [
+      {
+        'crop': Crop.defaults.isNotEmpty ? Crop.defaults[0] : _selectedCrop,
+        'time': '10 mins ago',
+        'scansCount': 4,
+      },
+      {
+        'crop': Crop.defaults.length > 1 ? Crop.defaults[1] : _selectedCrop,
+        'time': '2 hours ago',
+        'scansCount': 2,
+      },
+      {
+        'crop': Crop.defaults.length > 2 ? Crop.defaults[2] : _selectedCrop,
+        'time': 'Yesterday',
+        'scansCount': 1,
+      },
+    ];
+
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1800),

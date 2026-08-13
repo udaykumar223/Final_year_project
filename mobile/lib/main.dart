@@ -29,7 +29,7 @@ class SmartCropApp extends StatelessWidget {
       title: 'SmartCrop AI',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      initialRoute: '/',
+      initialRoute: '/home',
       onGenerateRoute: _onGenerateRoute,
     );
   }
@@ -37,58 +37,63 @@ class SmartCropApp extends StatelessWidget {
   Route<dynamic>? _onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/':
+      case '/home':
+        return _fadeRoute(const HomeScreen(), settings);
+
+      case '/splash':
         return _fadeRoute(const SplashScreen(), settings);
 
       case '/login':
         return _fadeRoute(const LoginScreen(), settings);
 
-      case '/home':
-        return _fadeRoute(const HomeScreen(), settings);
-
       case '/crop-selection':
         return _slideRoute(const CropSelectionScreen(), settings);
 
       case '/scan':
-        final crop = settings.arguments as Crop;
+        final crop = (settings.arguments is Crop) ? (settings.arguments as Crop) : Crop.defaults[0];
         return _slideRoute(ScanScreen(crop: crop), settings);
 
       case '/image-preview':
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments is Map<String, dynamic> ? (settings.arguments as Map<String, dynamic>) : null;
+        if (args == null) return _fadeRoute(const HomeScreen(), settings);
         return _slideRoute(
           ImagePreviewScreen(
             imagePath: args['imagePath'] as String,
-            crop: args['crop'] as Crop,
+            crop: args['crop'] is Crop ? args['crop'] as Crop : Crop.defaults[0],
           ),
           settings,
         );
 
       case '/verification':
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments is Map<String, dynamic> ? (settings.arguments as Map<String, dynamic>) : null;
+        if (args == null) return _fadeRoute(const HomeScreen(), settings);
         return _slideRoute(
           VerificationScreen(
             imagePath: args['imagePath'] as String,
-            crop: args['crop'] as Crop,
+            crop: args['crop'] is Crop ? args['crop'] as Crop : Crop.defaults[0],
           ),
           settings,
         );
 
       case '/analysis':
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments is Map<String, dynamic> ? (settings.arguments as Map<String, dynamic>) : null;
+        if (args == null) return _fadeRoute(const HomeScreen(), settings);
         return _fadeRoute(
           AnalysisScreen(
             imagePath: args['imagePath'] as String,
-            crop: args['crop'] as Crop,
+            crop: args['crop'] is Crop ? args['crop'] as Crop : Crop.defaults[0],
           ),
           settings,
         );
 
       case '/result':
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments is Map<String, dynamic> ? (settings.arguments as Map<String, dynamic>) : null;
+        if (args == null || args['prediction'] == null) return _fadeRoute(const HomeScreen(), settings);
         return _slideRoute(
           ResultScreen(
             prediction: args['prediction'] as PredictionResult,
             imagePath: args['imagePath'] as String,
-            crop: args['crop'] as Crop,
+            crop: args['crop'] is Crop ? args['crop'] as Crop : Crop.defaults[0],
           ),
           settings,
         );
