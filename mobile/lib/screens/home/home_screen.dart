@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   Crop _selectedCrop = Crop.defaults[0]; // Default Banana
   late AnimationController _pulseController;
 
-  // Mock initial recent scans for demonstration
+  // Recent diagnostic records
   final List<Map<String, dynamic>> _recentScans = [
     {
       'crop': 'Banana',
@@ -31,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'score': '65%',
       'color': AppColors.moderate,
       'time': '10 mins ago',
-      'healthy': false,
     },
     {
       'crop': 'Radish',
@@ -41,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'score': '0%',
       'color': AppColors.healthy,
       'time': '2 hours ago',
-      'healthy': true,
     },
     {
       'crop': 'Groundnut',
@@ -51,7 +49,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'score': '30%',
       'color': AppColors.mild,
       'time': 'Yesterday',
-      'healthy': false,
     },
   ];
 
@@ -70,10 +67,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _pickFromGallery() async {
     try {
       final XFile? photo = await _picker.pickImage(
-        source: source,
+        source: ImageSource.gallery,
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 90,
@@ -90,8 +87,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not access ${source == ImageSource.camera ? "camera" : "gallery"}.'),
+          const SnackBar(
+            content: Text('Could not access gallery. Please check permissions.'),
             backgroundColor: AppColors.danger,
           ),
         );
@@ -99,89 +96,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     }
   }
 
-  void _showDiseaseGuide(Crop crop) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.surfaceCard,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(crop.emoji, style: const TextStyle(fontSize: 28)),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${crop.displayName} Disease Guide',
-                        style: AppTextStyles.titleLarge.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close_rounded, color: AppColors.textSecondary),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                'Identifiable diseases in this category (${crop.diseases.length} pathogens):',
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.accent),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              Flexible(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: crop.diseases.length,
-                  itemBuilder: (context, index) {
-                    final d = crop.diseases[index];
-                    final isHealthy = d.toLowerCase().contains('healthy');
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceVariant,
-                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                        border: Border.all(
-                          color: isHealthy ? AppColors.healthy.withValues(alpha: 0.3) : AppColors.border,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            isHealthy ? Icons.check_circle_rounded : Icons.coronavirus_rounded,
-                            size: 18,
-                            color: isHealthy ? AppColors.healthy : AppColors.danger,
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              d,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+  void _openCameraScanner() {
+    Navigator.of(context).pushNamed(
+      '/scan',
+      arguments: _selectedCrop,
     );
   }
 
@@ -210,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header: Profile & Live AI Badge
+                // Header: Profile & Live Status
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -232,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'SmartCrop AI Field Advisory',
+                          'Crop Health & Field Advisory',
                           style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
@@ -273,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                 const SizedBox(height: AppSpacing.lg),
 
-                // Live Agricultural Field & Spraying Conditions Widget
+                // Live Agricultural Field & Spraying Advisory Widget
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.base),
                   decoration: BoxDecoration(
@@ -399,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                           const SizedBox(height: AppSpacing.md),
                           Text(
-                            'Point your camera at any affected leaf to detect disease and calculate severity instantly.',
+                            'Take a clear photo of an affected leaf to identify plant disease and severity in seconds.',
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: Colors.white.withValues(alpha: 0.85),
                               height: 1.4,
@@ -407,12 +325,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                           const SizedBox(height: AppSpacing.xl),
 
-                          // Two Main Action Buttons: Camera & Gallery
+                          // Two Main Action Buttons
                           Row(
                             children: [
                               Expanded(
                                 child: ElevatedButton.icon(
-                                  onPressed: () => _pickImage(ImageSource.camera),
+                                  onPressed: _openCameraScanner,
                                   icon: const Icon(Icons.camera_alt_rounded, size: 20),
                                   label: const Text('Take Photo'),
                                   style: ElevatedButton.styleFrom(
@@ -428,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               const SizedBox(width: AppSpacing.md),
                               Expanded(
                                 child: OutlinedButton.icon(
-                                  onPressed: () => _pickImage(ImageSource.gallery),
+                                  onPressed: _pickFromGallery,
                                   icon: const Icon(Icons.photo_library_rounded, size: 20),
                                   label: const Text('From Gallery'),
                                   style: OutlinedButton.styleFrom(
@@ -451,36 +369,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Target Crop Selector
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Target Crop Category',
-                      style: AppTextStyles.titleMedium.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => _showDiseaseGuide(_selectedCrop),
-                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.menu_book_rounded, size: 16, color: AppColors.accent),
-                          const SizedBox(width: 4),
-                          Text(
-                            'View Pathogens',
-                            style: AppTextStyles.labelMedium.copyWith(color: AppColors.accent, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                // Target Crop Type Header
+                Text(
+                  'Target Crop Type',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
 
-                // Crop Cards Selector
+                // Crop Cards (Only Crops displayed cleanly)
                 Row(
                   children: Crop.defaults.map((crop) {
                     final isSelected = _selectedCrop.id == crop.id;
@@ -492,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           margin: const EdgeInsets.symmetric(horizontal: 4),
-                          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: 8),
+                          padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg, horizontal: 8),
                           decoration: BoxDecoration(
                             color: isSelected ? AppColors.surfaceVariant : AppColors.surfaceCard,
                             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -510,23 +409,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 : [],
                           ),
                           child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(crop.emoji, style: const TextStyle(fontSize: 28)),
-                              const SizedBox(height: 6),
+                              Text(crop.emoji, style: const TextStyle(fontSize: 32)),
+                              const SizedBox(height: 8),
                               Text(
                                 crop.displayName,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.titleSmall.copyWith(
                                   color: isSelected ? Colors.white : AppColors.textSecondary,
                                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${crop.diseaseCount} Diseases',
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: isSelected ? AppColors.accent : AppColors.textTertiary,
-                                  fontSize: 11,
                                 ),
                               ),
                             ],
@@ -539,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Recent Diagnostics History
+                // Recent Field Diagnoses
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -551,14 +443,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
                     ),
                     Text(
-                      'Syncing to Cloud',
+                      'Synced to Cloud',
                       style: AppTextStyles.bodySmall.copyWith(color: AppColors.textTertiary),
                     ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // List of recent field diagnosis logs
+                // Recent Diagnostics Feed
                 Column(
                   children: _recentScans.map((scan) {
                     final color = scan['color'] as Color;
@@ -629,7 +521,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Practical Farmer Advisory Card (Preventive Organic Care)
+                // Practical Agronomic Tip Card
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.base),
                   decoration: BoxDecoration(
@@ -654,7 +546,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Preventive Field Tip for ${_selectedCrop.displayName}',
+                              'Preventive Field Tip: ${_selectedCrop.displayName}',
                               style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
                             ),
                             const SizedBox(height: 4),
