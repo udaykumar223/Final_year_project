@@ -20,13 +20,13 @@ class Crop {
 
   int get diseaseCount => diseases.length;
 
-  /// Phase 1 crops — generated from the actual dataset
+  /// Supported crops
   static const List<Crop> availableCrops = [
     Crop(
       id: 'banana',
       name: 'Banana',
       displayName: 'Banana',
-      emoji: '\u{1F34C}',
+      emoji: '🍌',
       description: 'Detect 8 diseases including Sigatoka, Panama, and Moko',
       diseases: [
         'Bract Mosaic Virus', 'Cordana', 'Healthy', 'Insect Pest',
@@ -37,7 +37,7 @@ class Crop {
       id: 'groundnut',
       name: 'Groundnut',
       displayName: 'Groundnut',
-      emoji: '\u{1F95C}',
+      emoji: '🥜',
       description: 'Detect 5 diseases including Leaf Spot and Rust',
       diseases: [
         'Early Leaf Spot', 'Early Rust', 'Healthy',
@@ -48,7 +48,7 @@ class Crop {
       id: 'radish',
       name: 'Radish',
       displayName: 'Radish',
-      emoji: '\u{1F958}',
+      emoji: '🌱',
       description: 'Detect 4 diseases including Downy Mildew and Mosaic',
       diseases: [
         'Black Leaf Spot', 'Downy Mildew', 'Flea Beetle',

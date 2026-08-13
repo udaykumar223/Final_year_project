@@ -27,27 +27,18 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'crop': 'Banana',
       'emoji': '🍌',
       'disease': 'Cordana Leaf Spot',
-      'severity': 'Moderate',
-      'score': '65%',
-      'color': AppColors.moderate,
       'time': '10 mins ago',
     },
     {
       'crop': 'Radish',
-      'emoji': '🥬',
+      'emoji': '🌱',
       'disease': 'Healthy Leaf',
-      'severity': 'Healthy',
-      'score': '0%',
-      'color': AppColors.healthy,
       'time': '2 hours ago',
     },
     {
       'crop': 'Groundnut',
       'emoji': '🥜',
       'disease': 'Early Leaf Spot',
-      'severity': 'Mild',
-      'score': '30%',
-      'color': AppColors.mild,
       'time': 'Yesterday',
     },
   ];
@@ -248,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
                 const SizedBox(height: AppSpacing.xl),
 
-                // Hero Futuristic Scanner Card
+                // Hero Futuristic Scanner Card (Cleaned without top right icon)
                 AnimatedBuilder(
                   animation: _pulseController,
                   builder: (context, child) {
@@ -273,51 +264,34 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         ],
                       ),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withValues(alpha: 0.3),
-                                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                                    ),
-                                    child: Text(
-                                      'SELECTED: ${_selectedCrop.displayName.toUpperCase()}',
-                                      style: AppTextStyles.labelSmall.copyWith(
-                                        color: AppColors.accent,
-                                        letterSpacing: 1,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Scan & Diagnose Leaf',
-                                    style: AppTextStyles.headlineLarge.copyWith(
-                                      color: Colors.white,
-                                      fontSize: 22,
-                                    ),
-                                  ),
-                                ],
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                            ),
+                            child: Text(
+                              'SELECTED: ${_selectedCrop.displayName.toUpperCase()}',
+                              style: AppTextStyles.labelSmall.copyWith(
+                                color: AppColors.accent,
+                                letterSpacing: 1,
+                                fontWeight: FontWeight.w700,
                               ),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                ),
-                                child: Text(_selectedCrop.emoji, style: const TextStyle(fontSize: 26)),
-                              ),
-                            ],
+                            ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
+                          const SizedBox(height: 8),
                           Text(
-                            'Take a clear photo of an affected leaf to identify plant disease and severity in seconds.',
+                            'Scan & Diagnose Leaf',
+                            style: AppTextStyles.headlineLarge.copyWith(
+                              color: Colors.white,
+                              fontSize: 22,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          Text(
+                            'Take a clear photo of an affected leaf to identify plant disease in seconds.',
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: Colors.white.withValues(alpha: 0.85),
                               height: 1.4,
@@ -325,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                           const SizedBox(height: AppSpacing.xl),
 
-                          // Two Main Action Buttons
+                          // Action Buttons
                           Row(
                             children: [
                               Expanded(
@@ -379,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: AppSpacing.sm),
 
-                // Crop Cards (Only Crops displayed cleanly)
+                // Crop Cards (Only Banana, Groundnut, Radish displayed cleanly)
                 Row(
                   children: Crop.defaults.map((crop) {
                     final isSelected = _selectedCrop.id == crop.id;
@@ -450,10 +424,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // Recent Diagnostics Feed
+                // Recent Diagnostics Feed (Clean without severity pills)
                 Column(
                   children: _recentScans.map((scan) {
-                    final color = scan['color'] as Color;
                     return Container(
                       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                       padding: const EdgeInsets.all(AppSpacing.md),
@@ -467,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: color.withValues(alpha: 0.15),
+                              color: AppColors.surfaceVariant,
                               borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                             ),
                             child: Text(scan['emoji'], style: const TextStyle(fontSize: 22)),
@@ -477,33 +450,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      scan['disease'],
-                                      style: AppTextStyles.titleSmall.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: color.withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                                        border: Border.all(color: color.withValues(alpha: 0.4)),
-                                      ),
-                                      child: Text(
-                                        '${scan['severity'].toUpperCase()} (${scan['score']})',
-                                        style: AppTextStyles.labelSmall.copyWith(
-                                          color: color,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  scan['disease'],
+                                  style: AppTextStyles.titleSmall.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
@@ -517,55 +469,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                       ),
                     );
                   }).toList(),
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-
-                // Practical Agronomic Tip Card
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.base),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                        ),
-                        child: const Icon(Icons.shield_rounded, color: AppColors.accent, size: 24),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Preventive Field Tip: ${_selectedCrop.displayName}',
-                              style: AppTextStyles.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              _selectedCrop.id == 'banana'
-                                  ? 'Deleaf old or spotted leaves at the base to improve sunlight and restrict Sigatoka spore circulation.'
-                                  : _selectedCrop.id == 'groundnut'
-                                      ? 'Apply bio-fertilizer Trichoderma to the root zone to strengthen resistance against soil-borne root rot.'
-                                      : 'Ensure proper row spacing to avoid moisture stagnation and prevent Downy Mildew.',
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                                height: 1.4,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
 
                 const SizedBox(height: AppSpacing.xxl),
