@@ -29,26 +29,19 @@ class SmartCropApp extends StatelessWidget {
       title: 'SmartCrop AI',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      initialRoute: '/home',
+      home: const HomeScreen(),
+      routes: {
+        '/home': (context) => const HomeScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/splash': (context) => const SplashScreen(),
+        '/crop-selection': (context) => const CropSelectionScreen(),
+      },
       onGenerateRoute: _onGenerateRoute,
     );
   }
 
   Route<dynamic>? _onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
-      case '/home':
-        return _fadeRoute(const HomeScreen(), settings);
-
-      case '/splash':
-        return _fadeRoute(const SplashScreen(), settings);
-
-      case '/login':
-        return _fadeRoute(const LoginScreen(), settings);
-
-      case '/crop-selection':
-        return _slideRoute(const CropSelectionScreen(), settings);
-
       case '/scan':
         final crop = (settings.arguments is Crop) ? (settings.arguments as Crop) : Crop.defaults[0];
         return _slideRoute(ScanScreen(crop: crop), settings);
